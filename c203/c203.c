@@ -100,6 +100,7 @@ void Queue_Init( Queue *queue ) {
 		queue->freeIndex = 0;
 	} else {
 		Queue_Error(QERR_INIT);
+		return; // return if queue is NULL
 	}
 }
 
@@ -153,6 +154,7 @@ void Queue_Front( const Queue *queue, char *dataPtr ) {
 		*dataPtr = queue->array[queue->firstIndex]; // if the queue is not empty, set the data pointer to the first element
 	} else {
 		Queue_Error(QERR_FRONT);
+		return; // return if the queue is empty
 	}
 }
 
@@ -169,6 +171,7 @@ void Queue_Remove( Queue *queue ) {
 		queue->firstIndex = nextIndex(queue->firstIndex); // if the queue is not empty, set the first index to the next element
 	} else {
 		Queue_Error(QERR_REMOVE);
+		return; // return if the queue is empty
 	}
 }
 
@@ -188,6 +191,7 @@ void Queue_Dequeue( Queue *queue, char *dataPtr ) {
 		Queue_Remove(queue); // remove the first element from the queue
 	} else {
 		Queue_Error(QERR_DEQUEUE);
+		return; // return if the queue is empty
 	}
 }
 
@@ -209,6 +213,7 @@ void Queue_Enqueue( Queue *queue, char data ) {
 		queue->freeIndex = nextIndex(queue->freeIndex); // set the free index to the next element
 	} else {
 		Queue_Error(QERR_ENQUEUE);
+		return; // return if the queue is full
 	}
 }
 

@@ -108,6 +108,7 @@ void List_InsertFirst( List *list, int data ) {
 		list->currentLength++; // increment the length of the list
 	} else {
 		List_Error();
+		return; // return if there is not enough memory
 	}
 }
 
@@ -133,6 +134,7 @@ void List_GetFirst( List *list, int *dataPtr ) {
 		*dataPtr = list->firstElement->data; // if the first element exists, set the data pointer to the data of the first element
 	} else {
 		List_Error();
+		return; // return if the list is empty
 	}
 }
 
@@ -193,6 +195,7 @@ void List_InsertAfter( List *list, int data ) {
 			list->currentLength++; // increment the length of the list
 		} else {
 			List_Error();
+			return; // return if there is not enough memory
 		}
 	}
 }
@@ -209,6 +212,7 @@ void List_GetValue( List *list, int *dataPtr ) {
 		*dataPtr = list->activeElement->data; // if the active element exists, set the data pointer to the data of the active element
 	} else {
 		List_Error();
+		return; // return if the list is not active
 	}
 }
 
