@@ -166,12 +166,11 @@ void List_DeleteFirst( List *list ) {
  */
 void List_DeleteAfter( List *list ) {
 	if(list->activeElement != NULL && list->activeElement->nextElement != NULL) {
-		ListElementPtr temp = list->activeElement->nextElement;
-		ListElementPtr elementAfterNext = list->activeElement->nextElement->nextElement;
-		ListElementPtr nextElement = elementAfterNext;
-		list->activeElement->nextElement = nextElement;
-		free(temp);
-		list->currentLength--;
+		ListElementPtr temp = list->activeElement->nextElement; // temporarily save the next element
+		ListElementPtr nextElement = list->activeElement->nextElement->nextElement;  // next element is next element after the next element of the active element
+		list->activeElement->nextElement = nextElement; // set the next element to be the one after the next element of the active element
+		free(temp); // free the next element of the active element
+		list->currentLength--; // decrement the length of the list
 	}
 }
 
