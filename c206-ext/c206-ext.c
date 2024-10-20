@@ -29,17 +29,17 @@ bool solved;
  */
 void receive_packet(DLList *packetLists, PacketPtr packet) {
     // pointer which will be used to traverse the list of packet lists
-    DLLElementPtr currentNode = packetLists->firstElement;
     QosPacketListPtr qosList = NULL;
 
     // checks if there is an existing list with the same priority
-    while (currentNode) {
-        QosPacketListPtr currentList = (QosPacketListPtr)currentNode->data;
+    DLL_First(packetLists);
+    while (DLL_IsActive(packetLists)) {
+        QosPacketListPtr currentList = (QosPacketListPtr)packetLists->activeElement->data;
         if (currentList->priority == packet->priority) {
             qosList = currentList; // found a matching priority list, set it to qosList
             break;
         }
-        currentNode = currentNode->nextElement; // move on to the next list if no match was found
+        DLL_Next(packetLists); // move on to the next list if no match was found
     }
 
     // if we didnt find a list with the same priority, create a new one
@@ -97,16 +97,16 @@ void send_packets(DLList *packetLists, DLList *outputPacketList, int maxPacketCo
 
     // loop until we reach the maximum packet count
     while (packetCnt < maxPacketCount) {
-        DLLElementPtr currentNode = packetLists->firstElement;
         QosPacketListPtr highestPriorityL = NULL;
 
         // find the list with the highest priority
-        while (currentNode) {
-            QosPacketListPtr currentList = (QosPacketListPtr)currentNode->data;
+        DLL_First(packetLists);
+        while (DLL_IsActive(packetLists)) {
+            QosPacketListPtr currentList = (QosPacketListPtr)packetLists->activeElement->data;
             if ((highestPriorityL == NULL || currentList->priority > highestPriorityL->priority) && currentList->list->currentLength > 0) {
                 highestPriorityL = currentList; // set the list with the highest priority
             }
-            currentNode = currentNode->nextElement; // move on to the next list
+            DLL_Next(packetLists); // move on to the next list
         }
 
         if (highestPriorityL != NULL) {
