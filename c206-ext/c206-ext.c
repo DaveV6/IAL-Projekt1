@@ -45,18 +45,21 @@ void receive_packet(DLList *packetLists, PacketPtr packet) {
     // if we didnt find a list with the same priority, create a new one
     if (qosList == NULL) {
         qosList = (QosPacketListPtr)malloc(sizeof(QosPacketList));
-        if (qosList == NULL) {
+        if (qosList != NULL) {
+            qosList->priority = packet->priority;
+            qosList->list = (DLList*)malloc(sizeof(DLList));
+            // check if the memory was allocated correctly
+            if (qosList->list != NULL) {
+                DLL_Init(qosList->list); // initialize the list
+                DLL_InsertLast(packetLists, (long)qosList); // add the list to the list of packet lists
+            } else {
+                free(qosList); // free the allocated memory
+                return; // if the memory was not allocated correctly, return
+            }
+        } else {
+            free(qosList); // free the allocated memory
             return; // if the memory was not allocated correctly, return
         }
-        qosList->priority = packet->priority;
-        qosList->list = (DLList*)malloc(sizeof(DLList));
-        // check if the memory was allocated correctly
-        if (qosList->list == NULL) {
-            free(qosList); // free the allocated memory
-            return;
-        }
-        DLL_Init(qosList->list); // initialize the list
-        DLL_InsertLast(packetLists, (long)qosList); // add the list to the list of packet lists
     }
 
     // if the list is full, delete every other packet
@@ -106,13 +109,14 @@ void send_packets(DLList *packetLists, DLList *outputPacketList, int maxPacketCo
             currentNode = currentNode->nextElement; // move on to the next list
         }
 
-        if (highestPriorityL == NULL) break; // if no list was found, break the loop
-
-        long packetData;
-        DLL_GetFirst(highestPriorityL->list, &packetData); // get the first packet from the list
-        DLL_InsertLast(outputPacketList, packetData); // insert the packet to the output list at the last place
-        DLL_DeleteFirst(highestPriorityL->list); // delete the first packet from the list
-
-        packetCnt++; // increment the packet count
+        if (highestPriorityL != NULL) {
+            long packetData;
+            DLL_GetFirst(highestPriorityL->list, &packetData); // get the first packet from the list
+            DLL_InsertLast(outputPacketList, packetData); // insert the packet to the output list at the last place
+            DLL_DeleteFirst(highestPriorityL->list); // delete the first packet from the list
+            packetCnt++; // increment the packet count
+        } else {
+            break; // if no list was found, break the loop
+        }
     }
 }
